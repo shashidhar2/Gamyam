@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamyam - Your Global Journey Begins Here</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for travel theme */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .section-anchor:before {
+            content: "";
+            display: block;
+            height: 64px; /* Offset for fixed header */
+            margin-top: -64px;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        
+        /* Updated Hero Background for Carousel */
+        .hero-bg {
+            position: relative;
+            overflow: hidden; /* Contains the absolute images */
+        }
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4); 
+            z-index: 20;
+        }
+        .slider-image {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            z-index: 10;
+        }
+        .slider-image.active { opacity: 1; }
+
+        .hamburger-icon span {
+            display: block; width: 25px; height: 3px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        nav a.nav-active {
+            color: #f97316 !important;
+            font-weight: 700;
+        }
+        /* Dropdown styling */
+        .group:hover .group-hover\:block {
+            display: block;
+        }
+        
+        /* Scrolled Header Style */
+        header.scrolled {
+            background-color: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+        }
+        .dest-slider-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        .dest-slider-image.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Header (Fixed at Top) -->
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo/Title -->
+                <div class="flex-shrink-0">
+                    <a href="#" class="text-3xl font-extrabold text-gray-800 tracking-wider">
+                        <img id="header-logo" src="logo.jpeg"  
+                             alt="Gamyam Travel Agency Logo" 
+                             class="h-12 w-30 rounded-md">
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation Menu -->
+                <nav class="hidden md:flex items-center space-x-6 lg:space-x-8 font-medium text-white">
+                    <a href="#home" class="hover:text-orange-300 transition duration-150 p-2 rounded-lg">Home</a>
+                    <a href="#about" class="hover:text-orange-300 transition duration-150 p-2 rounded-lg">About Us</a>
+                    <!-- Services Dropdown -->
+                    <div class="relative group">
+                        <a href="#services" class="hover:text-orange-300 transition duration-150 p-2 rounded-lg flex items-center">
+                            Services
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </a>
+                        <div class="absolute hidden group-hover:block bg-white shadow-lg rounded-md mt-2 py-2 w-48 z-10">
+                            <a href="#services" class="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600">Flight Bookings</a>
+                            <a href="#services" class="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600">Cargo & Logistics</a>
+                            <a href="#services" class="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600">Travel Insurance</a>
+                            <a href="#services" class="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600">Passport & Visa</a>
+                            <a href="#services" class="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600">Aviation Jobs</a>
+                            <a href="#services" class="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600">Training</a>
+                        </div>
+                    </div>
+                    <a href="#support" class="hover:text-orange-300 transition duration-150 p-2 rounded-lg">Help & Support</a>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-150">
+                    <span class="hamburger-icon">
+                        <span class="bg-white"></span>
+                        <span class="bg-white"></span>
+                        <span class="bg-white"></span>
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-900/90 backdrop-blur-sm text-white shadow-xl border-t border-gray-700">
+            <nav class="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col">
+                <a href="#home" class="hover:bg-gray-800 block px-3 py-2 rounded-md font-medium" onclick="toggleMobileMenu()">Home</a>
+                <a href="#about" class="hover:bg-gray-800 block px-3 py-2 rounded-md font-medium" onclick="toggleMobileMenu()">About Us</a>
+                <a href="#services" class="hover:bg-gray-800 block px-3 py-2 rounded-md font-medium" onclick="toggleMobileMenu()">Services</a>
+                <a href="#support" class="hover:bg-gray-800 block px-3 py-2 rounded-md font-medium" onclick="toggleMobileMenu()">Help & Support</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="section-anchor hero-bg h-screen flex items-center justify-center text-center">
+            <div id="image-slider" class="absolute inset-0"></div>
+            <div class="relative z-30 max-w-screen-2xl mx-auto px-4">
+                <h1 class="text-6xl sm:text-7xl font-extrabold text-white mb-4 drop-shadow-lg leading-tight">See the world like a local</h1>
+                <p class="text-lg sm:text-xl text-gray-200 drop-shadow-md">Find a local guide, customize your itinerary, and enjoy the most authentic experience.</p>
+            </div>
+        </section>
+
+        <!-- Feature Callouts Section -->
+        <section class="bg-orange-600 py-4 text-white shadow-xl -mt-12 md:-mt-16 relative z-30 rounded-t-xl">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto mb-1 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
+                        <h3 class="text-lg font-bold">Hand Picked Guides</h3>
+                        <p class="text-xs text-orange-200">Local expertise for authentic experiences.</p>
+                    </div>
+                    <div class="p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto mb-1 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2v-6a2 2 0 012-2h2m4-5h4V3h-4v2z" /></svg>
+                        <h3 class="text-lg font-bold">24/7 Global Support</h3>
+                        <p class="text-xs text-orange-200">We are always available.</p>
+                    </div>
+                    <div class="p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto mb-1 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.467 9.5 3.56 7.5 3.5h-1a2 2 0 00-2 2v8.5a2 2 0 002 2h2a2 2 0 002-2v-2.5m-6 3h12a2 2 0 002-2v-8.5a2 2 0 00-2-2h-1a2 2 0 00-2-2v12a2 2 0 002 2h2a2 2 0 002-2v-8.5a2 2 0 00-2-2h-1a2 2 0 00-2-2v-2.5" /></svg>
+                        <h3 class="text-lg font-bold">Private Tours</h3>
+                        <p class="text-xs text-orange-200">Customized, exclusive travel.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 1: About Us -->
+        <section id="about" class="section-anchor py-16 bg-white">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <h2 class="text-4xl font-bold text-gray-800 mb-6 border-b-4 border-orange-500 pb-2">About Us</h2>
+                <div class="space-y-4">
+                    <p class="text-lg text-gray-600">From our home base in Hyderabad, India, Gamyam is dedicated to crafting unforgettable experiences for travelers across the globe. We specialize in custom itineraries to vibrant hubs like India, futuristic Singapore, luxurious Dubai, and the iconic cities of the USA. Our mission is to handle every detail, so you can focus on the adventure.</p>
+                    <ul class="list-disc list-inside text-gray-600 space-y-2">
+                        <li>Personalized itinerary planning</li>
+                        <li>24/7 global support</li>
+                        <li>Expert local guides</li>
+                        <li>Sustainable tourism focus</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEW Services Section -->
+        <section id="services" class="section-anchor py-16 bg-gray-50">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <h2 class="text-4xl font-bold text-gray-800 mb-10 border-b-4 border-orange-500 pb-2">Our Comprehensive Services</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Service 1: Flight Bookings -->
+                    <a href="https://form.jotform.com/251915363325153" target="_blank" class="block bg-white p-6 rounded-xl shadow-md transform hover:-translate-y-2 transition-transform duration-300">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Flight Bookings</h3>
+                        <p class="text-gray-600">Seamlessly book domestic and international flights with competitive pricing and flexible options to suit your travel needs.</p>
+                    </a>
+                    <!-- Service 2: Cargo Bookings -->
+                    <div class="bg-white p-6 rounded-xl shadow-md transform hover:-translate-y-2 transition-transform duration-300">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 2h8a1 1 0 001-1z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16 16h2a2 2 0 002-2V6a2 2 0 00-2-2h-2v12z" /></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Cargo & Logistics</h3>
+                        <p class="text-gray-600">Reliable and efficient air cargo booking services to transport your goods safely and on schedule across the globe.</p>
+                    </div>
+                    <!-- Service 3: Travel Insurance -->
+                    <div class="bg-white p-6 rounded-xl shadow-md transform hover:-translate-y-2 transition-transform duration-300">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Travel Insurance</h3>
+                        <p class="text-gray-600">Travel with peace of mind. We offer comprehensive insurance plans to protect you against unforeseen events during your journey.</p>
+                    </div>
+                    <!-- Service 4: Passport/Visa -->
+                    <div class="bg-white p-6 rounded-xl shadow-md transform hover:-translate-y-2 transition-transform duration-300">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Passport & Visa Assistance</h3>
+                        <p class="text-gray-600">Navigate complex application processes with ease. Our experts provide complete assistance for passports and visa processing.</p>
+                    </div>
+                    <!-- Service 5: Aviation Jobs -->
+                    <div class="bg-white p-6 rounded-xl shadow-md transform hover:-translate-y-2 transition-transform duration-300">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Aviation Job Placements</h3>
+                        <p class="text-gray-600">Connecting talented professionals with leading opportunities in the aviation industry. Let us help you launch or advance your career.</p>
+                    </div>
+                    <!-- Service 6: Training -->
+                    <div class="bg-white p-6 rounded-xl shadow-md transform hover:-translate-y-2 transition-transform duration-300">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-5.998 12.078 12.078 0 01.665-6.479L12 14z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-5.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222 4 2.222V20" /></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Professional Training</h3>
+                        <p class="text-gray-600">Enhance your skills with our industry-leading training programs for aspiring aviation professionals and travel agents.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADDED Destinations Section -->
+        <section id="destinations" class="section-anchor py-16 bg-white">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <h2 class="text-4xl font-bold text-gray-800 mb-10 border-b-4 border-orange-500 pb-2">Our Top Global Destinations</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Card 1: India -->
+                    <div class="bg-gray-50 rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.02] transition duration-300">
+                        <div id="dest-carousel-india" class="relative w-full h-40"></div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold text-orange-800">Incredible India</h3>
+                            <p class="text-gray-500 text-sm mt-1">Culture, history, and vibrant festivals.</p>
+                            <div id="dest-time-india" class="mt-3 pt-3 border-t border-gray-200"></div>
+                        </div>
+                    </div>
+                    <!-- Card 2: Singapore -->
+                    <div class="bg-gray-50 rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.02] transition duration-300">
+                         <div id="dest-carousel-singapore" class="relative w-full h-40"></div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold text-orange-800">Futuristic Singapore</h3>
+                            <p class="text-gray-500 text-sm mt-1">Modern marvels and garden city life.</p>
+                            <div id="dest-time-singapore" class="mt-3 pt-3 border-t border-gray-200"></div>
+                        </div>
+                    </div>
+                    <!-- Card 3: Dubai -->
+                    <div class="bg-gray-50 rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.02] transition duration-300">
+                        <div id="dest-carousel-dubai" class="relative w-full h-40"></div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold text-orange-800">Luxury Dubai</h3>
+                            <p class="text-gray-500 text-sm mt-1">Desert safaris and architectural wonders.</p>
+                            <div id="dest-time-dubai" class="mt-3 pt-3 border-t border-gray-200"></div>
+                        </div>
+                    </div>
+                    <!-- Card 4: USA -->
+                    <div class="bg-gray-50 rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.02] transition duration-300">
+                        <div id="dest-carousel-usa" class="relative w-full h-40"></div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold text-orange-800">Diverse USA</h3>
+                            <p class="text-gray-500 text-sm mt-1">From bustling cities to national parks.</p>
+                            <div id="dest-time-usa" class="mt-3 pt-3 border-t border-gray-200"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="support" class="section-anchor py-16 bg-gray-100">
+             <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <h2 class="text-4xl font-bold text-gray-800 mb-10 border-b-4 border-orange-500 pb-2">Help & Support</h2>
+                <div class="max-w-3xl mx-auto p-6 rounded-xl bg-white shadow-lg text-center">
+                    <h3 class="text-2xl font-bold mb-4 text-orange-800">Contact Our Team</h3>
+                    <p class="text-lg mb-6 text-gray-600">Ready to start planning or need assistance? Reach out to our specialists directly:</p>
+                    <ul class="space-y-4 text-gray-700">
+                        <li><strong>Email:</strong> info@gamyamnow.com</li>
+                        <li><strong>Phone (India):</strong> +91 98765 43210</li>
+                        <li><strong>Hyderabad Office:</strong> 123 Jubilee Hills, Hyderabad, Telangana 500033, India</li>
+                        <li><strong>Global Support Line:</strong> +1 (555) 123-4567</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-16">
+        <div class="max-w-6xl mx-auto px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4">Gamyam</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46,6C21.78,6.34 21.06,6.58 20.31,6.68C21.1,6.2 21.72,5.43 22,4.5C21.26,4.95 20.46,5.26 19.62,5.41C18.91,4.65 17.9,4.1 16.79,4.1C14.65,4.1 12.91,5.84 12.91,7.98C12.91,8.3 12.95,8.6 13,8.89C9.13,8.7 5.79,6.92 3.4,4.22C2.97,4.96 2.73,5.84 2.73,6.77C2.73,8.12 3.42,9.3 4.45,10C3.82,9.98 3.23,9.81 2.71,9.54V9.59C2.71,11.55 4.1,13.18 5.96,13.54C5.55,13.65 5.12,13.71 4.67,13.71C4.38,13.71 4.1,13.68 3.82,13.63C4.34,15.22 5.83,16.3 7.59,16.33C6.2,17.38 4.48,18 2.62,18C2.28,18 1.95,17.98 1.62,17.94C3.42,19.12 5.53,19.8 7.79,19.8C16.78,19.8 20.49,12.51 20.49,6.54C20.49,6.34 20.49,6.14 20.48,5.94C21.32,5.32 22,4.55 22.46,3.68L22.46,6Z" /></svg></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2M17,17H14V11H17V17M10,17H7V11H10V17M10,9H7V7H10V9Z" /></svg></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z" /></svg></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19,3H5C3.89,3 3,3.89 3,5V19C3,20.1 3.9,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.89 20.1,3 19,3M8.5,18H5.5V9H8.5V18M6.94,7.64C6.1,7.64 5.4,6.95 5.4,6.12C5.4,5.28 6.1,4.6 6.94,4.6C7.78,4.6 8.48,5.28 8.48,6.12C8.48,6.95 7.78,7.64 6.94,7.64M18.5,18H15.5V13.43C15.5,12.14 15,10.92 13.5,10.92C12.08,10.92 11.5,11.91 11.5,13.29V18H8.5V9H11.5V10.3H11.57C12.01,9.5 13.06,8.75 14.5,8.75C17.5,8.75 18.5,10.74 18.5,13.09V18Z" /></svg></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#services" class="text-gray-400 hover:text-white">Services</a></li>
+                        <li><a href="#support" class="text-gray-400 hover:text-white">Help & Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Our Newsletter</h3>
+                    <p class="text-gray-400 mb-4">Please subscribe here to get latest updates.</p>
+                    <form>
+                        <div class="flex">
+                            <input type="email" placeholder="Email" class="w-full px-4 py-2 text-gray-800 bg-gray-100 rounded-l-md focus:outline-none">
+                            <button type="submit" class="px-4 py-2 bg-orange-600 text-white font-semibold rounded-r-md hover:bg-orange-700">Subscribe</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="mt-12 border-t border-gray-800 pt-8 text-center text-gray-500">
+                 <p>&copy; 2024 Gamyam. All rights reserved. Travel far, travel wide.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Mobile Menu Toggle Logic ---
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        function toggleMobileMenu() { mobileMenu.classList.toggle('hidden'); }
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+
+        // --- Image Carousel Logic ---
+        const heroImages = ['https://thumbs.dreamstime.com/b/happy-couple-love-travel-raised-hands-cliff-happy-couple-love-travel-raised-hands-cliff-norway-man-woman-112188598.jpg', 'https://t4.ftcdn.net/jpg/00/65/48/25/360_F_65482539_C0ZozE5gUjCafz7Xq98WB4dW6LAhqKfs.jpg', 'https://t3.ftcdn.net/jpg/14/15/71/56/360_F_1415715650_XCvf9Zz3fDSUZ7IGzlwoFgQM53GJzdXI.jpg', 'https://statics.vinpearl.com/international-travel-0_1684821084.jpg'];
+        const sliderContainer = document.getElementById('image-slider');
+        let currentImageIndex = 0;
+        heroImages.forEach((src, index) => {
+            const img = document.createElement('img');
+            img.src = src; img.alt = `Travel Image ${index + 1}`; img.className = 'slider-image';
+            if (index === 0) img.classList.add('active');
+            sliderContainer.appendChild(img);
+        });
+        const imageElements = Array.from(sliderContainer.children);
+        function nextImage() {
+            imageElements[currentImageIndex].classList.remove('active');
+            currentImageIndex = (currentImageIndex + 1) % imageElements.length;
+            imageElements[currentImageIndex].classList.add('active');
+        }
+        setInterval(nextImage, 3000);
+
+        // --- Active Nav Link & Transparent Header Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const header = document.getElementById('main-header');
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            const sections = document.querySelectorAll('.section-anchor');
+            const allNavLinks = document.querySelectorAll('header nav a');
+            let isClickScrolling = false;
+            const setActiveLink = (sectionId) => {
+                allNavLinks.forEach(link => { link.classList.remove('nav-active'); });
+                const activeLinks = document.querySelectorAll(`header nav a[href="#${sectionId}"]`);
+                activeLinks.forEach(link => { link.classList.add('nav-active'); });
+            };
+            allNavLinks.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    const href = event.currentTarget.getAttribute('href');
+                    if (href && href.startsWith('#') && href.length > 1) {
+                        const sectionId = href.substring(1);
+                        setActiveLink(sectionId);
+                        isClickScrolling = true;
+                        setTimeout(() => { isClickScrolling = false; }, 1000); 
+                    }
+                });
+            });
+            const observerOptions = { root: null, rootMargin: '-40% 0px -60% 0px', threshold: 0 };
+            const observer = new IntersectionObserver((entries) => {
+                if (isClickScrolling) return;
+                entries.forEach(entry => { if (entry.isIntersecting) { setActiveLink(entry.target.id); } });
+            }, observerOptions);
+            sections.forEach(section => { observer.observe(section); });
+        });
+
+        // --- Destination Times & Carousel Logic ---
+        const timeZoneInfo = [
+            { city: "India", id: "Asia/Kolkata", destId: "dest-time-india" },
+            { city: "Singapore", id: "Asia/Singapore", destId: "dest-time-singapore" },
+            { city: "Dubai", id: "Asia/Dubai", destId: "dest-time-dubai" },
+            { city: "USA (NY)", id: "America/New_York", destId: "dest-time-usa" },
+        ];
+        
+        const destinationImages = {
+            india: [
+                'https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=2071&auto=format&fit=crop',
+                'https://www.revv.co.in/blogs/wp-content/uploads/2019/11/self-drive-car-rental-delhi-gurgaon-noida_revv-blog.jpg',
+                //'https://images.unsplash.com/photo-1524293581273-79261801a247?q=80&w=2070&auto=format&fit=crop',
+                //'https://images.unsplash.com/photo-1617594243837-dd84f399f243?q=80&w=1935&auto=format&fit=crop'
+            ],
+            singapore: [
+                'https://images.unsplash.com/photo-1525625293386-668f4238d312?q=80&w=1974&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=2070&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1529973565457-a63945c71d47?q=80&w=2070&auto=format&fit=crop'
+            ],
+            dubai: [
+                'https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=1974&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1528702748617-c64d49f918af?q=80&w=1974&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1512495524363-f22b7d483d18?q=80&w=1974&auto=format&fit=crop'
+            ],
+            usa: [
+                'https://images.unsplash.com/photo-1549221876-2b4f4e72df14?q=80&w=1974&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1541112443268-0731a52c3c62?q=80&w=2070&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1527333656c27-12004052862c?q=80&w=2070&auto=format&fit=crop'
+            ]
+        };
+
+        const destinationCarousels = [
+            { name: 'india', element: document.getElementById('dest-carousel-india'), currentIndex: 0 },
+            { name: 'singapore', element: document.getElementById('dest-carousel-singapore'), currentIndex: 0 },
+            { name: 'dubai', element: document.getElementById('dest-carousel-dubai'), currentIndex: 0 },
+            { name: 'usa', element: document.getElementById('dest-carousel-usa'), currentIndex: 0 },
+        ];
+
+        function initializeDestinationCarousels() {
+            destinationCarousels.forEach(carousel => {
+                const images = destinationImages[carousel.name];
+                images.forEach((src, index) => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = 'dest-slider-image';
+                    if (index === 0) img.classList.add('active');
+                    carousel.element.appendChild(img);
+                });
+            });
+        }
+
+        function cycleDestinationImage(carousel) {
+            const images = Array.from(carousel.element.children);
+            images[carousel.currentIndex].classList.remove('active');
+            carousel.currentIndex = (carousel.currentIndex + 1) % images.length;
+            images[carousel.currentIndex].classList.add('active');
+        }
+
+        initializeDestinationCarousels();
+        destinationCarousels.forEach(carousel => {
+            setInterval(() => cycleDestinationImage(carousel), 5000);
+        });
+
+        function updateClocks() {
+            // Update Destination Card Times
+            timeZoneInfo.forEach(info => {
+                const destTimeEl = document.getElementById(info.destId);
+                if (destTimeEl) {
+                    const now = new Date();
+                    const datePart = now.toLocaleDateString('en-US', { timeZone: info.id, weekday: 'short', month: 'short', day: 'numeric' });
+                    const timePart = now.toLocaleTimeString('en-US', { timeZone: info.id, hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+                    destTimeEl.innerHTML = `
+                        <div class="flex items-center justify-center text-xs text-gray-600 space-x-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span class="font-semibold">${datePart}</span>
+                            <span class="text-gray-300">|</span>
+                            <span class="font-mono">${timePart}</span>
+                        </div>
+                    `;
+                }
+            });
+        }
+        
+        setInterval(updateClocks, 1000);
+        updateClocks(); 
+
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamyam - 3D Travel</title>
+    <!-- 1. Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- 2. Load three.js (for 3D) --><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* Custom font and styling */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            /* This makes the canvas the background */
+            background-color: #0a0a0a;
+            color: #d2d2d7;
+        }
+        
+        /* Custom scrollbar for a modern look */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f97316; /* Orange accent from new site */
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #fb923c;
+        }
+
+        /* Offset for fixed header */
+        .section-anchor:before {
+            content: "";
+            display: block;
+            height: 64px; /* Matches header height (h-16) */
+            margin-top: -64px;
+            visibility: hidden;
+        }
+
+        /* Active nav link style */
+        nav a.nav-active {
+            color: #ffffff !important;
+            font-weight: 500;
+        }
+
+        /* --- Hero Slider CSS (Restored) --- */
+        .hero-slider-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            background-color: #0a0a0a;
+        }
+        .hero-slider-image.active {
+            opacity: 1;
+        }
+        .carousel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .carousel-dot.active {
+            background-color: #fff;
+        }
+
+        /* --- Destination Slider CSS --- */
+        .dest-slider-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        .dest-slider-image.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="text-gray-200">
+
+    <!-- 3. The 3D Canvas --><!-- This canvas will be fixed in the background --><canvas id="webgl-canvas" class="fixed top-0 left-0 w-full h-full z-0"></canvas>
+
+    <!-- 4. The Scrollable Content Container --><!-- This div holds all the page content and scrolls OVER the canvas --><div id="content-container" class="relative z-10 w-full h-screen overflow-y-auto overflow-x-hidden">
+
+        <!-- Header/Navigation --><header id="main-header" class="sticky top-0 z-50 w-full bg-gray-900/70 backdrop-blur-md border-b border-gray-700/50">
+            <nav class="max-w-6xl mx-auto flex items-center justify-between p-4 h-16">
+                <a href="#home" class="flex-shrink-0">
+                    <!-- Image path restored --><img src="logo.jpeg" alt="Gamyam Logo" class="h-12 w-auto" onerror="this.src='https://placehold.co/120x48/0a0a0a/f97316?text=Gamyam'; this.onerror=null;">
+                </a>
+                <div class="hidden md:flex items-center space-x-8 text-sm">
+                    <a href="#home" class="text-gray-300 hover:text-white transition-colors">Home</a>
+                    <a href="#about" class="text-gray-300 hover:text-white transition-colors">About Us</a>
+                    <a href="#services" class="text-gray-300 hover:text-white transition-colors">Services</a>
+                    <a href="#destinations" class="text-gray-300 hover:text-white transition-colors">Destinations</a>
+                    <a href="#support" class="text-gray-300 hover:text-white transition-colors">Support</a>
+                </div>
+                <!-- Mobile Menu Button --><button id="mobile-menu-button" class="md:hidden text-gray-300 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </nav>
+            
+            <!-- Mobile Menu --><div id="mobile-menu" class="hidden md:hidden bg-gray-900/90 backdrop-blur-sm shadow-xl">
+                <nav class="px-4 pt-2 pb-4 space-y-2 flex flex-col text-center">
+                    <a href="#home" class="block py-2 rounded-md font-medium text-gray-200 hover:text-white" onclick="toggleMobileMenu()">Home</a>
+                    <a href="#about" class="block py-2 rounded-md font-medium text-gray-200 hover:text-white" onclick="toggleMobileMenu()">About Us</a>
+                    <a href="#services" class="block py-2 rounded-md font-medium text-gray-200 hover:text-white" onclick="toggleMobileMenu()">Services</a>
+                    <a href="#destinations" class="block py-2 rounded-md font-medium text-gray-200 hover:text-white" onclick="toggleMobileMenu()">Destinations</a>
+                    <a href="#support" class="block py-2 rounded-md font-medium text-gray-200 hover:text-white" onclick="toggleMobileMenu()">Support</a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content Sections --><main>
+            <!-- Hero Section (Restored Slider Functionality) --><section id="home" class="section-anchor min-h-screen flex flex-col justify-center items-center text-center p-8 relative">
+                <!-- Background Image Slider --><div id="hero-image-slider" class="absolute inset-0 z-0"></div>
+                <!-- Dark Overlay --><div class="absolute inset-0 bg-black/50 z-10"></div>
+                
+                <!-- Content --><div class="relative z-20 max-w-4xl mx-auto px-4">
+                    <h1 id="hero-title" class="text-5xl md:text-3xl font-bold text-white mb-4 leading-tight transition-opacity duration-700 ease-in-out"></h1>
+                    <p id="hero-subtitle" class="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto transition-opacity duration-700 ease-in-out"></p>
+                    
+                </div>
+
+                <!-- Carousel Controls --><div id="carousel-controls" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center space-x-6">
+                    <button id="play-pause-btn" class="text-white"></button>
+                    <div id="carousel-dots" class="flex items-center space-x-3"></div>
+                </div>
+            </section>
+
+            <!-- About Section --><section id="about" class="section-anchor min-h-screen flex flex-col justify-center items-center p-8">
+                <div class="max-w-4xl mx-auto rounded-2xl shadow-2xl p-8 md:p-12 border border-gray-700/50 text-center">
+                    <h2 class="text-4xl font-bold text-white mb-4">Travel with Confidence.</h2>
+                    <p class="text-lg md:text-xl text-gray-300 leading-relaxed">
+                        Gamyam is your trusted partner in crafting unforgettable global experiences. Our mission is seamless, authentic travel with personalized itineraries, expert guides, and 24/7 global support to ensure a worry-free journey.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Services Section --><section id="services" class="section-anchor min-h-screen flex flex-col justify-center items-center p-8">
+                <div class="max-w-6xl mx-auto w-full">
+                    <h2 class="text-4xl font-bold text-white text-center mb-4">Comprehensive Travel Solutions.</h2>
+                    <p class="text-lg md:text-xl text-gray-300 text-center mb-12">From simple flights to complex logistics, we have you covered.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        
+                        <!-- Service Card 1: Flight Bookings --><div id="flight-booking-card" class="relative bg-gray-800/70 backdrop-blur-lg rounded-xl shadow-lg border border-gray-700/50 transition-all transform hover:scale-105 hover:shadow-orange-500/20 overflow-hidden cursor-pointer group h-64">
+                            <img src="Booking.png" alt="Flight Bookings" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/1f2937/f97316?text=Bookings'; this.onerror=null;">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-6 text-white">
+                                <h3 class="text-2xl font-semibold">Flight Bookings</h3>
+                                <p class="text-sm mt-1">Competitive pricing on domestic and international flights.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Service Card 2: Cargo --><div class="relative bg-gray-800/70 backdrop-blur-lg rounded-xl shadow-lg border border-gray-700/50 transition-all transform hover:scale-105 hover:shadow-orange-500/20 overflow-hidden group h-64">
+                            <img src="Cargo.png" alt="Cargo & Logistics" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/1f2937/f97316?text=Cargo'; this.onerror=null;">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-6 text-white">
+                                <h3 class="text-2xl font-semibold">Cargo & Logistics</h3>
+                                <p class="text-sm mt-1">Reliable and efficient air cargo booking services.</p>
+                            </div>
+                        </div>
+
+                        <!-- Service Card 3: Travel Insurance --><div class="relative bg-gray-800/70 backdrop-blur-lg rounded-xl shadow-lg border border-gray-700/50 transition-all transform hover:scale-105 hover:shadow-orange-500/20 overflow-hidden group h-64">
+                            <img src="https://images.unsplash.com/photo-1521295121783-8a321d551ad2?q=80&w=2070&auto=format&fit=crop" alt="Travel Insurance" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/1f2937/f97316?text=Insurance'; this.onerror=null;">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-6 text-white">
+                                <h3 class="text-2xl font-semibold">Travel Insurance</h3>
+                                <p class="text-sm mt-1">Comprehensive plans for peace of mind on your journey.</p>
+                            </div>
+                        </div>
+
+                        <!-- Service Card 4: Passport & Visa --><div class="relative bg-gray-800/70 backdrop-blur-lg rounded-xl shadow-lg border border-gray-700/50 transition-all transform hover:scale-105 hover:shadow-orange-500/20 overflow-hidden group h-64">
+                            <img src="Visa.png" alt="Passport & Visa" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/1f2937/f97316?text=Visa'; this.onerror=null;">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-6 text-white">
+                                <h3 class="text-2xl font-semibold">Passport & Visa</h3>
+                                <p class="text-sm mt-1">Expert guidance through complex application processes.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Service Card 5: Aviation Jobs --><div class="relative bg-gray-800/70 backdrop-blur-lg rounded-xl shadow-lg border border-gray-700/50 transition-all transform hover:scale-105 hover:shadow-orange-500/20 overflow-hidden group h-64">
+                            <img src="Jobs.png" alt="Aviation Jobs" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/1f2937/f97316?text=Jobs'; this.onerror=null;">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-6 text-white">
+                                <h3 class="text-2xl font-semibold">Aviation Jobs</h3>
+                                <p class="text-sm mt-1">Connecting professionals with opportunities in aviation.</p>
+                            </div>
+                        </div>
+
+                        <!-- Service Card 6: Professional Training --><div class="relative bg-gray-800/70 backdrop-blur-lg rounded-xl shadow-lg border border-gray-700/50 transition-all transform hover:scale-105 hover:shadow-orange-500/20 overflow-hidden group h-64">
+                            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop" alt="Professional Training" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/1f2937/f97316?text=Training'; this.onerror=null;">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-6 text-white">
+                                <h3 class="text-2xl font-semibold">Professional Training</h3>
+                                <p class="text-sm mt-1">Industry-leading programs for aspiring travel agents.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Destinations Section --><section id="destinations" class="section-anchor min-h-screen flex flex-col justify-center items-center p-8">
+                <div class="max-w-6xl mx-auto w-full">
+                    <h2 class="text-4xl font-bold text-white text-center mb-4">Explore the World.</h2>
+                    <p class="text-lg md:text-xl text-gray-300 text-center mb-12">Discover our curated selection of top global destinations.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        
+                        <!-- Destination Card 1: India --><div class="relative bg-gray-800/70 backdrop-blur-lg rounded-xl shadow-lg border border-gray-700/50 transition-all transform hover:scale-105 hover:shadow-orange-500/20 overflow-hidden group h-[30rem]">
+                            <div id="dest-carousel-india" class="absolute inset-0 opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-8 text-white text-center">
+                                <h3 class="text-3xl font-semibold">Incredible India</h3>
+                                <p class="mt-2 text-gray-200">Culture, history, and vibrant festivals await.</p>
+                                <div id="dest-time-india" class="mt-4 pt-4 border-t border-gray-600"></div>
+                            </div>
+                        </div>
+
+                        <!-- Destination Card 2: Singapore --><div class="relative bg-gray-800/70 backdrop-blur-lg rounded-xl shadow-lg border border-gray-700/50 transition-all transform hover:scale-105 hover:shadow-orange-500/20 overflow-hidden group h-[30rem]">
+                            <div id="dest-carousel-singapore" class="absolute inset-0 opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-8 text-white text-center">
+                                <h3 class="text-3xl font-semibold">Futuristic Singapore</h3>
+                                <p class="mt-2 text-gray-200">A stunning blend of modern marvels and lush gardens.</p>
+                                <div id="dest-time-singapore" class="mt-4 pt-4 border-t border-gray-600"></div>
+                            </div>
+                        </div>
+
+                        <!-- Destination Card 3: Dubai --><div class="relative bg-gray-800/70 backdrop-blur-lg rounded-xl shadow-lg border border-gray-700/50 transition-all transform hover:scale-105 hover:shadow-orange-500/20 overflow-hidden group h-[30rem]">
+                            <div id="dest-carousel-dubai" class="absolute inset-0 opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-8 text-white text-center">
+                                <h3 class="text-3xl font-semibold">Luxury Dubai</h3>
+                                <p class="mt-2 text-gray-200">Experience desert safaris and architectural wonders.</p>
+                                <div id="dest-time-dubai" class="mt-4 pt-4 border-t border-gray-600"></div>
+                            </div>
+                        </div>
+
+                        <!-- Destination Card 4: USA --><div class="relative bg-gray-800/70 backdrop-blur-lg rounded-xl shadow-lg border border-gray-700/50 transition-all transform hover:scale-105 hover:shadow-orange-500/20 overflow-hidden group h-[30rem]">
+                            <div id="dest-carousel-usa" class="absolute inset-0 opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-8 text-white text-center">
+                                <h3 class="text-3xl font-semibold">Diverse USA</h3>
+                                <p class="mt-2 text-gray-200">From bustling cities to breathtaking national parks.</p>
+                                <div id="dest-time-usa" class="mt-4 pt-4 border-t border-gray-600"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+           <!-- Support/Contact Section --><section id="support" class="section-anchor min-h-screen flex flex-col justify-center items-center p-8">
+                <div class="max-w-4xl mx-auto w-full text-center bg-gray-900/70 backdrop-blur-lg rounded-2xl shadow-2xl p-8 md:p-12 border border-gray-700/50">
+                    <h2 class="text-4xl font-bold text-white mb-4">We're Here to Help.</h2>
+                    <p class="text-lg md:text-xl text-gray-300 mb-8">Ready to start planning or need assistance? Fill out the form below or reach out to our specialists directly.</p>
+
+                    <!-- New Contact Form -->
+                    <form action="#" method="POST" class="w-full max-w-lg mx-auto text-left space-y-6 mb-12">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
+                            <input type="text" name="name" id="name" autocomplete="name" class="block w-full px-4 py-3 rounded-lg bg-gray-800/50 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out" placeholder="John Doe">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+                            <input type="email" name="email" id="email" autocomplete="email" class="block w-full px-4 py-3 rounded-lg bg-gray-800/50 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out" placeholder="you@example.com">
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-300 mb-2">Message</label>
+                            <textarea id="message" name="message" rows="4" class="block w-full px-4 py-3 rounded-lg bg-gray-800/50 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out" placeholder="How can we help you today?"></textarea>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="mt-4 px-10 py-3 bg-orange-600 text-white font-semibold rounded-full shadow-lg hover:bg-orange-700 transition-all transform hover:scale-105">
+                                Send Message
+                            </button>
+                        </div>
+                    </form>
+                    <!-- End New Contact Form -->
+
+                    <div class="border-t border-gray-700/50 pt-8">
+                        <p class="text-lg text-gray-300 mb-4">Or contact us directly:</p>
+                        <ul class="space-y-4 mt-4 text-lg text-gray-200">
+                            <li><strong>Email:</strong> <a href="mailto:info@gamyam.com" class="text-orange-400 hover:underline">info@gamyamnow.com</a></li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer --><footer class="text-center p-8 bg-gray-900/50 backdrop-blur-md mt-16 border-t border-gray-700/50 text-gray-400">
+             <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+                    <div>
+                        <h3 class="font-semibold text-orange-600 mb-4">Explore</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#home" class="hover:text-orange-400">Home</a></li>
+                            <li><a href="#about" class="hover:text-orange-400">About Us</a></li>
+                            <li><a href="#destinations" class="hover:text-orange-400">Destinations</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-orange-600 mb-4">Services</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#services" class="hover:text-orange-400">Flight Bookings</a></li>
+                            <li><a href="#services" class="hover:text-orange-400">Cargo & Logistics</a></li>
+                            <li><a href="#services" class="hover:text-orange-400">Travel Insurance</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-orange-600 mb-4">Support</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#support" class="hover:text-orange-400">Contact Us</a></li>
+                            <li><a href="#" class="hover:text-orange-400">FAQs</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-orange-600 mb-4">Legal</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="hover:text-orange-400">Privacy Policy</a></li>
+                            <li><a href="#" class="hover:text-orange-400">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- New Social Media Links Section --><div class="mb-12">
+                    <h3 class="font-semibold text-orange-600 mb-4">Follow Us</h3>
+                    <div class="flex justify-center space-x-6">
+                        <!-- Facebook --><a href="#" class="text-gray-400 hover:text-orange-400 transition-colors" aria-label="Facebook">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.03998C6.48 2.03998 2 6.51998 2 12.04C2 17.06 5.66 21.21 10.44 21.9V14.89H7.9V12.04H10.44V9.8C10.44 7.29 11.93 5.95998 14.22 5.95998C15.31 5.95998 16.45 6.14998 16.45 6.14998V8.61998H15.19C13.95 8.61998 13.56 9.38998 13.56 10.18V12.04H16.34L15.89 14.89H13.56V21.9C18.34 21.21 22 17.06 22 12.04C22 6.51998 17.52 2.03998 12 2.03998Z"></path></svg>
+                        </a>
+                        <!-- Twitter --><a href="#" class="text-gray-400 hover:text-orange-400 transition-colors" aria-label="Twitter">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.46 6C21.78 6.3 21.06 6.5 20.31 6.6C21.1 6.1 21.73 5.3 22.05 4.3C21.3 4.8 20.48 5.1 19.62 5.3C18.89 4.5 17.8 4 16.59 4C14.28 4 12.39 5.9 12.39 8.2C12.39 8.5 12.42 8.8 12.49 9.1C8.61 8.9 5.18 7.1 2.91 4.4C2.5 5.2 2.29 6.1 2.29 7C2.29 8.6 3.12 10 4.35 10.8C3.65 10.8 2.99 10.6 2.42 10.3C2.42 10.3 2.42 10.3 2.42 10.4C2.42 12.6 4.02 14.4 6.16 14.8C5.81 14.9 5.45 15 5.08 15C4.79 15 4.51 15 4.24 14.9C4.83 16.7 6.48 18 8.41 18C6.83 19.3 4.87 20 2.73 20C2.4 20 2.07 20 1.75 19.9C3.75 21.2 6.11 22 8.69 22C16.58 22 20.73 15.1 20.73 9.3C20.73 9.1 20.73 8.9 20.72 8.7C21.54 8.1 22.11 7.1 22.46 6Z"></path></svg>
+                        </a>
+                        <!-- Instagram --><a href="#" class="text-gray-400 hover:text-orange-400 transition-colors" aria-label="Instagram">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.07 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path></svg>
+                        </a>
+                        <!-- LinkedIn --><a href="#" class="text-gray-400 hover:text-orange-400 transition-colors" aria-label="LinkedIn">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 0H5C2.239 0 0 2.239 0 5V19C0 21.761 2.239 24 5 24H19C21.761 24 24 21.761 24 19V5C24 2.239 21.761 0 19 0ZM8 19H5V8H8V19ZM6.5 6.732C5.534 6.732 4.75 5.942 4.75 4.968C4.75 3.994 5.534 3.204 6.5 3.204C7.466 3.204 8.25 3.994 8.25 4.968C8.25 5.942 7.467 6.732 6.5 6.732ZM20 19H17V13.396C17 10.028 13.992 9.792 13.992 9.792V19H11V8H14V9.661C14.707 8.564 16.37 8 18.062 8C20 8 20 10.422 20 12.812V19Z"></path></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="pt-8 border-t border-gray-700 text-center text-sm">
+                    <p>&copy; 2025 Gamyam. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+
+    </div> <!-- End #content-container --><!-- Floating Chat Button --><button id="open-chat-btn" class="fixed bottom-8 right-8 z-50 bg-orange-600 text-white p-4 rounded-full shadow-lg hover:bg-orange-700 transition-all transform hover:scale-105">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H6L4 18V4H20V16Z"></path></svg>
+    </button>
+    
+    <!-- Jotform Iframe Modal --><div id="jotform-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[100] hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl h-[90vh] relative flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="text-xl font-semibold text-gray-800">Book Your Flight</h3>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            </div>
+            <div class="flex-grow p-1">
+                <iframe id="jotform-iframe" src="" class="w-full h-full border-0 rounded-b-2xl" title="Jotform Flight Booking"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact/Chat Form Pop-up Window --><!-- Changed from centered modal to pop-up window --><div id="contact-modal" class="fixed bottom-24 right-8 z-[100] hidden w-full max-w-sm h-[60vh] flex flex-col">
+        <div class="bg-white rounded-2xl shadow-xl w-full h-full relative flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="text-xl font-semibold text-gray-800">Contact Us</h3>
+                <button id="close-contact-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            </div>
+            <div class="flex-grow p-1">
+                <iframe id="contact-form-iframe" src="" class="w-full h-full border-0 rounded-b-2xl" title="Jotform Contact Form"></iframe>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 5. The JavaScript for 3D and Navigation --><script>
+        // --- 3D Background with three.js ---
+
+        let scene, camera, renderer, particles;
+        let mouseX = 0;
+        let mouseY = 0;
+        let windowHalfX = window.innerWidth / 2;
+        let windowHalfY = window.innerHeight / 2;
+
+        function init3D() {
+            try {
+                const canvas = document.getElementById('webgl-canvas');
+                if (!canvas) {
+                    console.error("Canvas not found");
+                    return;
+                }
+                
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.z = 5;
+
+                renderer = new THREE.WebGLRenderer({
+                    canvas: canvas,
+                    alpha: true // Transparent background
+                });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+                const particleCount = 7000;
+                const positions = new Float32Array(particleCount * 3);
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const i3 = i * 3;
+                    positions[i3] = THREE.MathUtils.randFloatSpread(10); // x
+                    positions[i3 + 1] = THREE.MathUtils.randFloatSpread(10); // y
+                    positions[i3 + 2] = THREE.MathUtils.randFloatSpread(10); // z
+                }
+                
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                
+                const material = new THREE.PointsMaterial({
+                    size: 0.015,
+                    color: 0xf97316, // Orange particles to match new theme
+                    transparent: true,
+                    opacity: 0.7,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                particles = new THREE.Points(geometry, material);
+                scene.add(particles);
+
+                // Event Listeners
+                document.addEventListener('mousemove', onDocumentMouseMove);
+                window.addEventListener('resize', onWindowResize);
+                // Listen for scroll on the content container
+                document.getElementById('content-container').addEventListener('scroll', onScroll);
+
+            } catch (error) {
+                console.error("Error initializing 3D scene:", error);
+                const canvas = document.getElementById('webgl-canvas');
+                if(canvas) canvas.style.display = 'none';
+            }
+        }
+
+        function onWindowResize() {
+            windowHalfX = window.innerWidth / 2;
+            windowHalfY = window.innerHeight / 2;
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        }
+
+        function onDocumentMouseMove(event) {
+            mouseX = (event.clientX - windowHalfX) * 0.1;
+            mouseY = (event.clientY - windowHalfY) * 0.1;
+        }
+
+        function onScroll(event) {
+            const scrollTop = event.target.scrollTop;
+            if (particles) {
+                particles.rotation.y = scrollTop * 0.0005;
+                particles.rotation.x = scrollTop * 0.0003;
+            }
+        }
+
+        function animate() {
+            if (!renderer || !scene || !camera) return; // Guard clause if init failed
+            requestAnimationFrame(animate);
+
+            camera.position.x += (mouseX * 0.01 - camera.position.x) * 0.02;
+            camera.position.y += (-mouseY * 0.01 - camera.position.y) * 0.02;
+            camera.lookAt(scene.position);
+
+            if (particles) {
+                particles.rotation.z += 0.0005;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // --- Mobile Menu Toggle Logic ---
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        function toggleMobileMenu() { 
+            mobileMenu.classList.toggle('hidden'); 
+        }
+
+        // --- All other JS to run after DOM is loaded ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for three.js and init
+            if (typeof THREE === 'undefined') {
+                console.error("THREE.js failed to load.");
+            } else {
+                init3D();
+                animate();
+            }
+
+            // --- Smooth Scrolling for Navigation ---
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    const contentContainer = document.getElementById('content-container');
+                    
+                    if (targetElement && contentContainer) {
+                        contentContainer.scrollTo({
+                            top: targetElement.offsetTop - 64, // Offset for sticky header (h-16)
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // --- Mobile Menu Event Listener ---
+            if(mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', toggleMobileMenu);
+            }
+
+            // --- Active Nav Link on Scroll Logic ---
+            const sections = document.querySelectorAll('.section-anchor');
+            const allNavLinks = document.querySelectorAll('#main-header nav a');
+            
+            const observerOptions = { 
+                root: document.getElementById('content-container'), // Observe scrolling within the container
+                rootMargin: '-40% 0px -60% 0px', 
+                threshold: 0 
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {   
+                    if (entry.isIntersecting) {   
+                        const sectionId = entry.target.id;
+                        allNavLinks.forEach(link => {   
+                            link.classList.toggle('nav-active', link.getAttribute('href') === `#${sectionId}`);
+                        });
+                    }
+                });
+            }, observerOptions);
+            sections.forEach(section => { observer.observe(section); });
+
+            // --- Jotform Modal Logic ---
+            const flightBookingCard = document.getElementById('flight-booking-card');
+            const jotformModal = document.getElementById('jotform-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const jotformIframe = document.getElementById('jotform-iframe');
+            const jotformUrl = 'https://form.jotform.com/251915363325153';
+
+            if (flightBookingCard && jotformModal && closeModalBtn && jotformIframe) {
+                flightBookingCard.addEventListener('click', () => {
+                    jotformIframe.src = jotformUrl;
+                    jotformModal.classList.remove('hidden');
+                    document.getElementById('content-container').style.overflow = 'hidden'; // Prevent background scrolling
+                });
+
+                const closeModal = () => {
+                    jotformModal.classList.add('hidden');
+                    jotformIframe.src = ''; // Clear src to stop form processes
+                    document.getElementById('content-container').style.overflow = 'auto'; // Restore scrolling
+                };
+
+                closeModalBtn.addEventListener('click', closeModal);
+
+                jotformModal.addEventListener('click', (event) => {
+                    if (event.target === jotformModal) {
+                        closeModal();
+                    }
+                });
+            }
+
+            // --- Contact/Chat Modal Logic (Updated) ---
+            const openChatBtn = document.getElementById('open-chat-btn');
+            const contactModal = document.getElementById('contact-modal');
+            const closeContactModalBtn = document.getElementById('close-contact-modal-btn');
+            const contactFormIframe = document.getElementById('contact-form-iframe');
+            // A new hypothetical URL for a simple contact form. Replace with your own free form link.
+            const contactFormUrl = 'https://form.jotform.com/241234567890156'; // Placeholder URL
+
+            if (openChatBtn && contactModal && closeContactModalBtn && contactFormIframe) {
+                openChatBtn.addEventListener('click', () => {
+                    contactFormIframe.src = contactFormUrl;
+                    contactModal.classList.remove('hidden');
+                    openChatBtn.classList.add('hidden'); // Hide the chat button
+                });
+
+                const closeContactModal = () => {
+                    contactModal.classList.add('hidden');
+                    contactFormIframe.src = ''; // Clear src to stop form processes
+                    openChatBtn.classList.remove('hidden'); // Show the chat button
+                };
+
+                closeContactModalBtn.addEventListener('click', closeContactModal);
+
+                // Removed click-outside-to-close logic as it's a pop-up, not an overlay
+            }
+
+            // --- Hero Carousel Logic (Restored) ---
+            const heroContent = [
+                { title: "Your Journey, Redefined.", subtitle: "Experience the world's wonders with unparalleled service and local expertise." },
+                { title: "Discover Breathtaking Landscapes.", subtitle: "From serene lakes to majestic mountains, your adventure starts here." },
+                { title: "Create Unforgettable Memories.", subtitle: "We craft personalized experiences that last a lifetime." },
+                { title: "Seamless Global Connections.", subtitle: "Your trusted partner for flights, cargo, and visas." }
+            ];
+            const heroImages = [
+                'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2070&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2070&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?q=80&w=2070&auto=format&fit=crop',
+                'https://images.pexels.com/photos/346885/pexels-photo-346885.jpeg'
+            ];
+            const sliderContainer = document.getElementById('hero-image-slider');
+            const dotsContainer = document.getElementById('carousel-dots');
+            const playPauseBtn = document.getElementById('play-pause-btn');
+            const heroTitle = document.getElementById('hero-title');
+            const heroSubtitle = document.getElementById('hero-subtitle');
+
+            let currentImageIndex = 0;
+            let isPlaying = true;
+            let carouselInterval;
+
+            const playIcon = `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 3.84A1.5 1.5 0 004 5.202v9.596a1.5 1.5 0 002.3 1.362l7.69-4.798a1.5 1.5 0 000-2.724L6.3 3.84z"></path></svg>`;
+            const pauseIcon = `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"></path></svg>`;
+
+            function goToSlide(index) {
+                if (!sliderContainer || !dotsContainer || !heroTitle || !heroSubtitle) return; // Guard clause
+                if (index === currentImageIndex && heroTitle.textContent) return;
+
+                const images = sliderContainer.children;
+                const dots = dotsContainer.children;
+
+                heroTitle.style.opacity = 0;
+                heroSubtitle.style.opacity = 0;
+                
+                setTimeout(() => {
+                    if (images[currentImageIndex]) images[currentImageIndex].classList.remove('active');
+                    if (dots[currentImageIndex]) dots[currentImageIndex].classList.remove('active');
+                    
+                    currentImageIndex = index;
+
+                    if (images[currentImageIndex]) images[currentImageIndex].classList.add('active');
+                    if (dots[currentImageIndex]) dots[currentImageIndex].classList.add('active');
+
+                    heroTitle.textContent = heroContent[currentImageIndex].title;
+                    heroSubtitle.textContent = heroContent[currentImageIndex].subtitle;
+                    heroTitle.style.opacity = 1;
+                    heroSubtitle.style.opacity = 1;
+                }, 750); // Wait for fade out
+            }
+
+            function nextSlide() {
+                goToSlide((currentImageIndex + 1) % heroImages.length);
+            }
+
+            function stopCarousel() {
+                clearInterval(carouselInterval);
+                isPlaying = false;
+                if (playPauseBtn) playPauseBtn.innerHTML = playIcon;
+            }
+
+            function startCarousel() {
+                stopCarousel(); // Clear any existing interval
+                carouselInterval = setInterval(nextSlide, 5000);
+                isPlaying = true;
+                if (playPauseBtn) playPauseBtn.innerHTML = pauseIcon;
+            }
+
+            if (sliderContainer && dotsContainer && playPauseBtn) {
+                heroImages.forEach((src, index) => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = 'hero-slider-image';
+                    img.onerror = () => { img.src = `https://placehold.co/1920x1080/0a0a0a/f97316?text=Image+Not+Found`; };
+                    if (index === 0) {
+                        img.classList.add('active');
+                        if (heroTitle) heroTitle.textContent = heroContent[index].title;
+                        if (heroSubtitle) heroSubtitle.textContent = heroContent[index].subtitle;
+                    }
+                    sliderContainer.appendChild(img);
+
+                    const dot = document.createElement('div');
+                    dot.className = 'carousel-dot';
+                    if (index === 0) dot.classList.add('active');
+                    dot.addEventListener('click', () => {
+                        goToSlide(index);
+                        if(isPlaying) {
+                            stopCarousel();
+                            startCarousel();
+                        }
+                    });
+                    dotsContainer.appendChild(dot);
+                });
+
+                playPauseBtn.addEventListener('click', () => {
+                    if (isPlaying) {
+                        stopCarousel();
+                    } else {
+                        startCarousel();
+                    }
+                });
+
+                startCarousel();
+            }
+            // --- End of Hero Carousel Logic ---
+
+
+            // --- Destination Times & Carousel Logic ---
+            const timeZoneInfo = [
+                { id: "Asia/Kolkata", destId: "dest-time-india" },
+                { id: "Asia/Singapore", destId: "dest-time-singapore" },
+                { id: "Asia/Dubai", destId: "dest-time-dubai" },
+                { id: "America/New_York", destId: "dest-time-usa" },
+            ];
+            
+            const destinationImages = {
+                india: [
+                    '2.png',
+                    'https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=2071&auto=format&fit=crop',
+                    '3.png'
+                ],
+                singapore: [
+                    'https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=2070&auto=format&fit=crop',
+                ],
+                dubai: [
+                    'https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=1974&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1528702748617-c64d49f918af?q=80&w=1974&auto=format&fit=crop',
+                ],
+                usa: [
+                    'https://wallpapercave.com/wp/wp7996059.jpg', // Fixed the 'httpshttps://' typo here
+                ]
+            };
+
+            const destinationCarousels = [
+                { name: 'india', element: document.getElementById('dest-carousel-india'), currentIndex: 0 },
+                { name: 'singapore', element: document.getElementById('dest-carousel-singapore'), currentIndex: 0 },
+                { name: 'dubai', element: document.getElementById('dest-carousel-dubai'), currentIndex: 0 },
+                { name: 'usa', element: document.getElementById('dest-carousel-usa'), currentIndex: 0 },
+            ];
+
+            function initializeDestinationCarousels() {
+                destinationCarousels.forEach(carousel => {
+                    if (!carousel.element) return; // Guard clause
+                    const images = destinationImages[carousel.name];
+                    if (!images) return; // Guard clause
+
+                    images.forEach((src, index) => {
+                        const img = document.createElement('img');
+                        img.src = src;
+                        img.className = 'dest-slider-image'; // Using the CSS class now
+                        // Add error handling for images
+                        img.onerror = () => { 
+                            img.src = `https://placehold.co/600x800/1f2937/f97316?text=Image+Not+Found`;
+                            console.warn(`Failed to load image: ${src}`);
+                        };
+                        if (index === 0) img.classList.add('active');
+                        carousel.element.appendChild(img);
+                    });
+                });
+            }
+
+            function cycleDestinationImage(carousel) {
+                if (!carousel.element) return;
+                const images = Array.from(carousel.element.children).filter(el => el.tagName === 'IMG');
+                if (images.length === 0) return;
+
+                images[carousel.currentIndex].classList.remove('active');
+                carousel.currentIndex = (carousel.currentIndex + 1) % images.length;
+                images[carousel.currentIndex].classList.add('active');
+            }
+
+            initializeDestinationCarousels();
+            destinationCarousels.forEach(carousel => {
+                // Only cycle if there is more than one image
+                if (destinationImages[carousel.name] && destinationImages[carousel.name].length > 1) {
+                    setInterval(() => cycleDestinationImage(carousel), 5000);
+                }
+            });
+            
+            function updateClocks() {
+                timeZoneInfo.forEach(info => {
+                    const destTimeEl = document.getElementById(info.destId);
+                    if (destTimeEl) {
+                        try {
+                            const now = new Date();
+                            const datePart = now.toLocaleDateString('en-US', { timeZone: info.id, month: 'short', day: 'numeric' });
+                            const timePart = now.toLocaleTimeString('en-US', { timeZone: info.id, hour12: true, hour: 'numeric', minute: '2-digit' });
+                            destTimeEl.innerHTML = `<p class="text-gray-200 text-sm">${datePart}, ${timePart}</p>`;
+                        } catch (e) {
+                            console.error(`Invalid time zone: ${info.id}`);
+                            destTimeEl.innerHTML = `<p class="text-gray-400 text-sm">Time unavailable</p>`;
+                        }
+                    }
+                });
+            }
+            
+            setInterval(updateClocks, 1000);
+            updateClocks();
+        });
+
+    </script>
+</body>
+</html>
+

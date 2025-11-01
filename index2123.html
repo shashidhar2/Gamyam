@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamyam - Your Journey, Redefined.</title>
+    <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Apple-inspired SF Pro font stack */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+        }
+
+        .section-anchor:before {
+            content: "";
+            display: block;
+            height: 60px; /* Offset for fixed header */
+            margin-top: -60px;
+            visibility: hidden;
+        }
+        
+        /* Header styling */
+        header {
+            background-color: rgba(29, 29, 31, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        nav a {
+            color: #d2d2d7;
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: #ffffff;
+        }
+        nav a.nav-active {
+            color: #ffffff !important;
+            font-weight: 500;
+        }
+
+        .hero-bg {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-slider-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            background-color: #000;
+        }
+
+        .hero-slider-image.active {
+            opacity: 1;
+        }
+
+        .carousel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .carousel-dot.active {
+            background-color: #fff;
+        }
+
+        .section-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #1d1d1f;
+        }
+        .section-subtitle {
+            font-size: 1.75rem;
+            color: #6e6e73;
+        }
+        .dest-slider-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        .dest-slider-image.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Header (Fixed at Top) --><header id="main-header" class="fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo/Title --><div class="flex-shrink-0">
+                    <a href="#">
+                        <img src="logo.jpeg" alt="Gamyam Logo" class="h-12 w-auto">
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation Menu --><nav class="hidden md:flex items-center space-x-8 text-sm">
+                    <a href="#home">Home</a>
+                    <a href="#about">About Us</a>
+                    <a href="#services">Services</a>
+                    <a href="#destinations">Destinations</a>
+                    <a href="#support">Support</a>
+                </nav>
+
+                <!-- Mobile Menu Button --><button id="mobile-menu-button" class="md:hidden p-2 rounded-md">
+                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu --><div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-sm text-white shadow-xl">
+            <nav class="px-4 pt-2 pb-4 space-y-2 flex flex-col text-center">
+                <a href="#home" class="block py-2 rounded-md font-medium" onclick="toggleMobileMenu()">Home</a>
+                <a href="#about" class="block py-2 rounded-md font-medium" onclick="toggleMobileMenu()">About Us</a>
+                <a href="#services" class="block py-2 rounded-md font-medium" onclick="toggleMobileMenu()">Services</a>
+                <a href="#destinations" class="block py-2 rounded-md font-medium" onclick="toggleMobileMenu()">Destinations</a>
+                <a href="#support" class="block py-2 rounded-md font-medium" onclick="toggleMobileMenu()">Support</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section --><section id="home" class="section-anchor hero-bg h-screen flex items-center justify-center text-center">
+            <div id="hero-image-slider" class="absolute inset-0"></div>
+            <div class="absolute inset-0 bg-black/30"></div>
+            <div class="relative z-10 max-w-4xl mx-auto px-4">
+                <h1 id="hero-title" class="text-5xl md:text-7xl font-bold text-white mb-4 leading-tight transition-opacity duration-500 ease-in-out"></h1>
+                <p id="hero-subtitle" class="text-xl md:text-2xl text-gray-200 transition-opacity duration-500 ease-in-out"></p>
+                 <a href="#services" class="mt-8 inline-block bg-orange-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-orange-700 transition duration-300">Explore Services</a>
+            </div>
+            <div id="carousel-controls" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center space-x-6">
+                <button id="play-pause-btn" class="text-white"></button>
+                <div id="carousel-dots" class="flex items-center space-x-3"></div>
+            </div>
+        </section>
+
+        <!-- Section 1: About Us --><section id="about" class="section-anchor py-24 bg-white">
+            <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center">
+                <h2 class="section-title mb-4">Travel with Confidence.</h2>
+                <p class="section-subtitle mb-8">
+                    Based in Hyderabad, Gamyam is your trusted partner in crafting unforgettable global experiences.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="relative rounded-2xl overflow-hidden group h-80">
+                        <img src="https://images.unsplash.com/photo-1522199755839-a2bacb67c546?q=80&w=2072&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/40"></div>
+                        <div class="absolute bottom-0 left-0 p-8 text-white">
+                            <h3 class="text-3xl font-semibold">Our Mission</h3>
+                            <p class="mt-2 text-gray-200">Seamless, authentic travel with personalized itineraries and expert guides.</p>
+                        </div>
+                    </div>
+                    <div class="relative rounded-2xl overflow-hidden group h-80">
+                         <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/40"></div>
+                        <div class="absolute bottom-0 left-0 p-8 text-white">
+                            <h3 class="text-3xl font-semibold">24/7 Global Support</h3>
+                            <p class="mt-2 text-gray-200">Our dedicated team is always available to assist, ensuring a worry-free journey.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEW Services Section --><section id="services" class="section-anchor py-24 bg-f5f5f7">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8 text-center">
+                 <h2 class="section-title mb-4">Comprehensive Travel Solutions.</h2>
+                 <p class="section-subtitle mb-12">From simple flights to complex logistics, we have you covered.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div id="flight-booking-card" class="relative rounded-2xl overflow-hidden group h-64 cursor-pointer">
+                        <img src="Booking.png" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/40"></div>
+                        <div class="absolute bottom-0 left-0 p-6 text-white">
+                            <h3 class="text-2xl font-semibold">Flight Bookings</h3>
+                            <p class="text-sm mt-1">Competitive pricing on domestic and international flights.</p>
+                        </div>
+                    </div>
+                    <div class="relative rounded-2xl overflow-hidden group h-64">
+                        <img src="Cargo.png" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/40"></div>
+                        <div class="absolute bottom-0 left-0 p-6 text-white">
+                            <h3 class="text-2xl font-semibold">Cargo & Logistics</h3>
+                            <p class="text-sm mt-1">Reliable and efficient air cargo booking services.</p>
+                        </div>
+                    </div>
+                    <div class="relative rounded-2xl overflow-hidden group h-64">
+                        <img src="https://images.unsplash.com/photo-1521295121783-8a321d551ad2?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/40"></div>
+                        <div class="absolute bottom-0 left-0 p-6 text-white">
+                            <h3 class="text-2xl font-semibold">Travel Insurance</h3>
+                            <p class="text-sm mt-1">Comprehensive plans for peace of mind on your journey.</p>
+                        </div>
+                    </div>
+                    <div class="relative rounded-2xl overflow-hidden group h-64">
+                        <img src="Visa.png" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/40"></div>
+                        <div class="absolute bottom-0 left-0 p-6 text-white">
+                            <h3 class="text-2xl font-semibold">Passport & Visa</h3>
+                            <p class="text-sm mt-1">Expert guidance through complex application processes.</p>
+                        </div>
+                    </div>
+                    <div class="relative rounded-2xl overflow-hidden group h-64">
+                        <img src="Jobs.png" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/40"></div>
+                        <div class="absolute bottom-0 left-0 p-6 text-white">
+                            <h3 class="text-2xl font-semibold">Aviation Jobs</h3>
+                            <p class="text-sm mt-1">Connecting professionals with opportunities in aviation.</p>
+                        </div>
+                    </div>
+                    <div class="relative rounded-2xl overflow-hidden group h-64">
+                        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/40"></div>
+                        <div class="absolute bottom-0 left-0 p-6 text-white">
+                            <h3 class="text-2xl font-semibold">Professional Training</h3>
+                            <p class="text-sm mt-1">Industry-leading programs for aspiring travel agents.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Destinations Section --><section id="destinations" class="section-anchor py-24 bg-white">
+           <!-- Destinations Section --><section id="destinations" class="section-anchor py-24 bg-white">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8 text-center">
+                <h2 class="section-title mb-4">Explore the World.</h2>
+                <p class="section-subtitle mb-12">Discover our curated selection of top global destinations.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="relative rounded-2xl overflow-hidden group h-[30rem]">
+                        <div id="dest-carousel-india" class="absolute inset-0"></div>
+                        <div class="absolute inset-0 bg-black/40"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-8 text-white text-center">
+                             <h3 class="text-3xl font-semibold">Incredible India</h3>
+                            <p class="mt-2 text-gray-200">Culture, history, and vibrant festivals await.</p>
+                             <div id="dest-time-india" class="mt-4 pt-4 border-t border-gray-700"></div>
+                        </div>
+                    </div>
+                     <div class="relative rounded-2xl overflow-hidden group h-[30rem]">
+                        <div id="dest-carousel-singapore" class="absolute inset-0"></div>
+                        <div class="absolute inset-0 bg-black/40"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-8 text-white text-center">
+                             <h3 class="text-3xl font-semibold">Futuristic Singapore</h3>
+                            <p class="mt-2 text-gray-200">A stunning blend of modern marvels and lush gardens.</p>
+                             <div id="dest-time-singapore" class="mt-4 pt-4 border-t border-gray-700"></div>
+                        </div>
+                    </div>
+                    <div class="relative rounded-2xl overflow-hidden group h-[30rem]">
+                        <div id="dest-carousel-dubai" class="absolute inset-0"></div>
+                        <div class="absolute inset-0 bg-black/40"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-8 text-white text-center">
+                             <h3 class="text-3xl font-semibold">Luxury Dubai</h3>
+                            <p class="mt-2 text-gray-200">Experience desert safaris and architectural wonders.</p>
+                             <div id="dest-time-dubai" class="mt-4 pt-4 border-t border-gray-700"></div>
+                        </div>
+                    </div>
+                    <div class="relative rounded-2xl overflow-hidden group h-[30rem]">
+                        <div id="dest-carousel-usa" class="absolute inset-0"></div>
+                        <div class="absolute inset-0 bg-black/40"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-8 text-white text-center">
+                             <h3 class="text-3xl font-semibold">Diverse USA</h3>
+                            <p class="mt-2 text-gray-200">From bustling cities to breathtaking national parks.</p>
+                             <div id="dest-time-usa" class="mt-4 pt-4 border-t border-gray-700"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="support" class="section-anchor py-24 bg-f5f5f7">
+             <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center">
+                 <h2 class="section-title mb-4">We're Here to Help.</h2>
+                 <p class="section-subtitle mb-8">Ready to start planning or need assistance? Reach out to our specialists directly.</p>
+                <div class="relative rounded-2xl overflow-hidden group h-96">
+                    <img src="https://tse1.mm.bing.net/th/id/OIP.rx0yzA07XCdznl2_kpD5uwHaEK?pid=Api&P=0&h=220" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/50"></div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-center w-full px-4">
+                         <h3 class="text-3xl font-semibold">Contact Our Team</h3>
+                         <ul class="space-y-4 mt-4 text-lg">
+                            <li><strong>Email:</strong> <a href="mailto:info@gamyam.com" class="text-orange-400 hover:underline">info@gamyamnow.com</a></li>
+                            <li><strong>Office:</strong><br>8230 Old Courthouse Rd, Suite 200<br>Vienna, VA 22182, USA</li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+ <!-- Jotform Iframe Modal -->
+    <div id="jotform-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[100] hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl h-[90vh] relative flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="text-xl font-semibold text-gray-800">Book Your Flight</h3>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            </div>
+            <div class="flex-grow p-1">
+                 <iframe id="jotform-iframe" src="" class="w-full h-full border-0 rounded-b-2xl" title="Jotform Flight Booking"></iframe>
+            </div>
+        </div>
+    </div>
+    <footer class="bg-black text-gray-400 py-16">
+        <div class="max-w-6xl mx-auto px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="font-semibold text-orange-600 mb-4">Explore</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="hover:text-orange-500">Home</a></li>
+                        <li><a href="#about" class="hover:text-orange-500">About Us</a></li>
+                        <li><a href="#destinations" class="hover:text-orange-500">Destinations</a></li>
+                    </ul>
+                </div>
+                 <div>
+                    <h3 class="font-semibold text-orange-600 mb-4">Services</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#services" class="hover:text-orange-500">Flight Bookings</a></li>
+                        <li><a href="#services" class="hover:text-orange-500">Cargo & Logistics</a></li>
+                         <li><a href="#services" class="hover:text-orange-500">Travel Insurance</a></li>
+                    </ul>
+                </div>
+                 <div>
+                    <h3 class="font-semibold text-orange-600 mb-4">Support</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#support" class="hover:text-orange-500">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-orange-500">FAQs</a></li>
+                    </ul>
+                </div>
+                 <div>
+                    <h3 class="font-semibold text-orange-600 mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-orange-500">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-orange-500">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-16 pt-8 border-t border-gray-800 text-center text-sm">
+                 <p>&copy; 2025 Gamyam. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Mobile Menu Toggle Logic ---
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        function toggleMobileMenu() { mobileMenu.classList.toggle('hidden'); }
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+
+        // --- Active Nav Link on Scroll & Click Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.section-anchor');
+            const allNavLinks = document.querySelectorAll('header nav a');
+            
+            const observerOptions = { root: null, rootMargin: '-40% 0px -60% 0px', threshold: 0 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { 
+                    if (entry.isIntersecting) { 
+                        const sectionId = entry.target.id;
+                        allNavLinks.forEach(link => { 
+                            link.classList.toggle('nav-active', link.getAttribute('href') === `#${sectionId}`);
+                        });
+                    }
+                });
+            }, observerOptions);
+            sections.forEach(section => { observer.observe(section); });
+
+            // --- Hero Carousel Logic ---
+            const heroContent = [
+                { title: "Your Journey, Redefined.", subtitle: "Experience the world's wonders with unparalleled service and local expertise." },
+                { title: "Discover Breathtaking Landscapes.", subtitle: "From serene lakes to majestic mountains, your adventure starts here." },
+                { title: "Create Unforgettable Memories.", subtitle: "We craft personalized experiences that last a lifetime." },
+                 { title: "Create Unforgettable Memories.", subtitle: "We craft personalized experiences that last a lifetime." }
+            ];
+            const heroImages = [
+                'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2070&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2070&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?q=80&w=2070&auto=format&fit=crop',
+                'https://images.pexels.com/photos/346885/pexels-photo-346885.jpeg'
+            ];
+            const sliderContainer = document.getElementById('hero-image-slider');
+            const dotsContainer = document.getElementById('carousel-dots');
+            const playPauseBtn = document.getElementById('play-pause-btn');
+            const heroTitle = document.getElementById('hero-title');
+            const heroSubtitle = document.getElementById('hero-subtitle');
+
+            let currentImageIndex = 0;
+            let isPlaying = true;
+            let carouselInterval;
+
+            const playIcon = `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 3.84A1.5 1.5 0 004 5.202v9.596a1.5 1.5 0 002.3 1.362l7.69-4.798a1.5 1.5 0 000-2.724L6.3 3.84z"></path></svg>`;
+            const pauseIcon = `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"></path></svg>`;
+
+            function goToSlide(index) {
+                if (index === currentImageIndex) return;
+                const images = sliderContainer.children;
+                const dots = dotsContainer.children;
+
+                heroTitle.style.opacity = 0;
+                heroSubtitle.style.opacity = 0;
+                
+                setTimeout(() => {
+                    images[currentImageIndex].classList.remove('active');
+                    dots[currentImageIndex].classList.remove('active');
+                    
+                    currentImageIndex = index;
+
+                    images[currentImageIndex].classList.add('active');
+                    dots[currentImageIndex].classList.add('active');
+
+                    heroTitle.textContent = heroContent[currentImageIndex].title;
+                    heroSubtitle.textContent = heroContent[currentImageIndex].subtitle;
+                    heroTitle.style.opacity = 1;
+                    heroSubtitle.style.opacity = 1;
+                }, 750);
+            }
+
+            function nextSlide() {
+                goToSlide((currentImageIndex + 1) % heroImages.length);
+            }
+
+            function stopCarousel() {
+                clearInterval(carouselInterval);
+                isPlaying = false;
+                playPauseBtn.innerHTML = playIcon;
+            }
+
+            function startCarousel() {
+                carouselInterval = setInterval(nextSlide, 5000);
+                isPlaying = true;
+                playPauseBtn.innerHTML = pauseIcon;
+            }
+
+            heroImages.forEach((src, index) => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = 'hero-slider-image';
+                if (index === 0) {
+                    img.classList.add('active');
+                    heroTitle.textContent = heroContent[index].title;
+                    heroSubtitle.textContent = heroContent[index].subtitle;
+                }
+                sliderContainer.appendChild(img);
+
+                const dot = document.createElement('div');
+                dot.className = 'carousel-dot';
+                if (index === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                    if(isPlaying) {
+                        stopCarousel();
+                        startCarousel();
+                    }
+                });
+                dotsContainer.appendChild(dot);
+            });
+
+            playPauseBtn.addEventListener('click', () => {
+                if (isPlaying) {
+                    stopCarousel();
+                } else {
+                    startCarousel();
+                }
+            });
+
+            startCarousel();
+
+        });
+
+        // --- Destination Times & Carousel Logic ---
+        const timeZoneInfo = [
+            { id: "Asia/Kolkata", destId: "dest-time-india" },
+            { id: "Asia/Singapore", destId: "dest-time-singapore" },
+            { id: "Asia/Dubai", destId: "dest-time-dubai" },
+            { id: "America/New_York", destId: "dest-time-usa" },
+        ];
+        
+        const destinationImages = {
+            india: [
+                '2.png',
+                'https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=2071&auto=format&fit=crop',
+                '3.png'
+            ],
+            singapore: [
+                'https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=2070&auto=format&fit=crop',
+            ],
+            dubai: [
+                'https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=1974&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1528702748617-c64d49f918af?q=80&w=1974&auto=format&fit=crop',
+            ],
+            usa: [
+                'https://wallpapercave.com/wp/wp7996059.jpg',
+            ]
+        };
+ // --- Jotform Modal Logic ---
+        const flightBookingCard = document.getElementById('flight-booking-card');
+        const jotformModal = document.getElementById('jotform-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const jotformIframe = document.getElementById('jotform-iframe');
+        const jotformUrl = 'https://form.jotform.com/251915363325153';
+
+        if (flightBookingCard && jotformModal && closeModalBtn && jotformIframe) {
+            flightBookingCard.addEventListener('click', () => {
+                jotformIframe.src = jotformUrl;
+                jotformModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            });
+
+            const closeModal = () => {
+                jotformModal.classList.add('hidden');
+                jotformIframe.src = ''; // Clear src to stop form processes
+                document.body.style.overflow = 'auto'; // Restore scrolling
+            };
+
+            closeModalBtn.addEventListener('click', closeModal);
+
+            // Close modal if user clicks outside the form container
+            jotformModal.addEventListener('click', (event) => {
+                if (event.target === jotformModal) {
+                    closeModal();
+                }
+            });
+        }
+
+        const destinationCarousels = [
+            { name: 'india', element: document.getElementById('dest-carousel-india'), currentIndex: 0 },
+            { name: 'singapore', element: document.getElementById('dest-carousel-singapore'), currentIndex: 0 },
+            { name: 'dubai', element: document.getElementById('dest-carousel-dubai'), currentIndex: 0 },
+            { name: 'usa', element: document.getElementById('dest-carousel-usa'), currentIndex: 0 },
+        ];
+
+        function initializeDestinationCarousels() {
+            destinationCarousels.forEach(carousel => {
+                const images = destinationImages[carousel.name];
+                images.forEach((src, index) => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = 'dest-slider-image';
+                    if (index === 0) img.classList.add('active');
+                    carousel.element.appendChild(img);
+                });
+            });
+        }
+
+        function cycleDestinationImage(carousel) {
+            const images = Array.from(carousel.element.children);
+            images[carousel.currentIndex].classList.remove('active');
+            carousel.currentIndex = (carousel.currentIndex + 1) % images.length;
+            images[carousel.currentIndex].classList.add('active');
+        }
+
+        initializeDestinationCarousels();
+        destinationCarousels.forEach(carousel => {
+            setInterval(() => cycleDestinationImage(carousel), 5000);
+        });
+        
+        function updateClocks() {
+            timeZoneInfo.forEach(info => {
+                const destTimeEl = document.getElementById(info.destId);
+                if (destTimeEl) {
+                    const now = new Date();
+                    const datePart = now.toLocaleDateString('en-US', { timeZone: info.id, month: 'short', day: 'numeric' });
+                    const timePart = now.toLocaleTimeString('en-US', { timeZone: info.id, hour12: true, hour: 'numeric', minute: '2-digit' });
+                    destTimeEl.innerHTML = `<p class="text-gray-200 text-sm">${datePart}, ${timePart}</p>`;
+                }
+            });
+        }
+        
+        setInterval(updateClocks, 1000);
+        updateClocks(); 
+
+    </script>
+</body>
+</html>
