@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gamyam - 3D Travel</title>
+    <title>Gamyam - Travel</title>
     <!-- 1. Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
-    <!-- 2. Load three.js (for 3D) --><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- 2. Load three.js (for 3D)<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> -->
     <style>
         /* Custom font and styling */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
@@ -103,9 +103,10 @@
                 </a>
                 <div class="hidden md:flex items-center space-x-8 text-sm">
                     <a href="#home" class="text-gray-300 hover:text-white transition-colors">Home</a>
-                    <a href="#about" class="text-gray-300 hover:text-white transition-colors">About Us</a>
                     <a href="#services" class="text-gray-300 hover:text-white transition-colors">Services</a>
                     <a href="#destinations" class="text-gray-300 hover:text-white transition-colors">Destinations</a>
+                    <a href="https://form.jotform.com/253018469188163" class="text-gray-300 hover:text-white transition-colors">Forums</a>
+                    <a href="#about" class="text-gray-300 hover:text-white transition-colors">About Us</a>
                     <a href="#support" class="text-gray-300 hover:text-white transition-colors">Support</a>
                 </div>
                 <!-- Mobile Menu Button --><button id="mobile-menu-button" class="md:hidden text-gray-300 hover:text-white">
@@ -141,14 +142,7 @@
                 </div>
             </section>
 
-            <!-- About Section --><section id="about" class="section-anchor min-h-screen flex flex-col justify-center items-center p-8">
-                <div class="max-w-4xl mx-auto rounded-2xl shadow-2xl p-8 md:p-12 border border-gray-700/50 text-center">
-                    <h2 class="text-4xl font-bold text-white mb-4">Travel with Confidence.</h2>
-                    <p class="text-lg md:text-xl text-gray-300 leading-relaxed">
-                        Gamyam is your trusted partner in crafting unforgettable global experiences. Our mission is seamless, authentic travel with personalized itineraries, expert guides, and 24/7 global support to ensure a worry-free journey.
-                    </p>
-                </div>
-            </section>
+          
 
             <!-- Services Section --><section id="services" class="section-anchor min-h-screen flex flex-col justify-center items-center p-8">
                 <div class="max-w-6xl mx-auto w-full">
@@ -263,14 +257,23 @@
                 </div>
             </section>
 
+            <!-- About Section --><section id="about" class="section-anchor min-h-screen flex flex-col justify-center items-center p-8">
+                <div class="max-w-4xl mx-auto rounded-2xl shadow-2xl p-8 md:p-12 border border-gray-700/50 text-center">
+                    <h2 class="text-4xl font-bold text-white mb-4">Travel with Confidence.</h2>
+                    <p class="text-lg md:text-xl text-gray-300 leading-relaxed">
+                        Gamyam is your trusted partner in crafting unforgettable global experiences. Our mission is seamless, authentic travel with personalized itineraries, expert guides, and 24/7 global support to ensure a worry-free journey.
+                    </p>
+                </div>
+            </section>
            <!-- Support/Contact Section --><section id="support" class="section-anchor min-h-screen flex flex-col justify-center items-center p-8">
                 <div class="max-w-4xl mx-auto w-full text-center bg-gray-900/70 backdrop-blur-lg rounded-2xl shadow-2xl p-8 md:p-12 border border-gray-700/50">
                     <h2 class="text-4xl font-bold text-white mb-4">We're Here to Help.</h2>
                     <p class="text-lg md:text-xl text-gray-300 mb-8">Ready to start planning or need assistance? Fill out the form below or reach out to our specialists directly.</p>
 
                     <!-- New Contact Form -->
-                    <form action="#" method="POST" class="w-full max-w-lg mx-auto text-left space-y-6 mb-12">
-                        <div>
+                    <!-- <form action="#" method="POST" class="w-full max-w-lg mx-auto text-left space-y-6 mb-12"> -->
+                        <iframe width="100%" height="600px" src="https://form.jotform.com/253171048514149" ></iframe>
+                        <!-- <div>
                             <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
                             <input type="text" name="name" id="name" autocomplete="name" class="block w-full px-4 py-3 rounded-lg bg-gray-800/50 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out" placeholder="John Doe">
                         </div>
@@ -286,8 +289,8 @@
                             <button type="submit" class="mt-4 px-10 py-3 bg-orange-600 text-white font-semibold rounded-full shadow-lg hover:bg-orange-700 transition-all transform hover:scale-105">
                                 Send Message
                             </button>
-                        </div>
-                    </form>
+                        </div> -->
+                    <!-- </form> -->
                     <!-- End New Contact Form -->
 
                     <div class="border-t border-gray-700/50 pt-8">
@@ -360,9 +363,7 @@
             </div>
         </footer>
 
-    </div> <!-- End #content-container --><!-- Floating Chat Button --><button id="open-chat-btn" class="fixed bottom-8 right-8 z-50 bg-orange-600 text-white p-4 rounded-full shadow-lg hover:bg-orange-700 transition-all transform hover:scale-105">
-        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H6L4 18V4H20V16Z"></path></svg>
-    </button>
+    </div> <!-- End #content-container -->
     
     <!-- Jotform Iframe Modal --><div id="jotform-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[100] hidden p-4">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl h-[90vh] relative flex flex-col">
@@ -376,15 +377,12 @@
         </div>
     </div>
 
-    <!-- Contact/Chat Form Pop-up Window --><!-- Changed from centered modal to pop-up window --><div id="contact-modal" class="fixed bottom-24 right-8 z-[100] hidden w-full max-w-sm h-[60vh] flex flex-col">
-        <div class="bg-white rounded-2xl shadow-xl w-full h-full relative flex flex-col">
-            <div class="flex justify-between items-center p-4 border-b">
-                <h3 class="text-xl font-semibold text-gray-800">Contact Us</h3>
-                <button id="close-contact-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
-            </div>
+    <!-- Contact/Chat Form Pop-up Window --><!-- Changed from centered modal to pop-up window -->
+
             <div class="flex-grow p-1">
-                <iframe id="contact-form-iframe" src="" class="w-full h-full border-0 rounded-b-2xl" title="Jotform Contact Form"></iframe>
-            </div>
+                <script src='https://cdn.jotfor.ms/agent/embedjs/019a290ab17b772b88f3900bf6cafbd8ad11/embed.js'>
+</script>
+    
         </div>
     </div>
 
@@ -502,9 +500,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Check for three.js and init
             if (typeof THREE === 'undefined') {
-                console.error("THREE.js failed to load.");
+                //console.error("THREE.js failed to load.");
             } else {
-                init3D();
+                //init3D();
                 animate();
             }
 
@@ -558,7 +556,7 @@
             const jotformModal = document.getElementById('jotform-modal');
             const closeModalBtn = document.getElementById('close-modal-btn');
             const jotformIframe = document.getElementById('jotform-iframe');
-            const jotformUrl = 'https://form.jotform.com/251915363325153';
+            const jotformUrl = 'https://form.jotform.com/252997501971165';
 
             if (flightBookingCard && jotformModal && closeModalBtn && jotformIframe) {
                 flightBookingCard.addEventListener('click', () => {
@@ -582,31 +580,31 @@
                 });
             }
 
-            // --- Contact/Chat Modal Logic (Updated) ---
-            const openChatBtn = document.getElementById('open-chat-btn');
-            const contactModal = document.getElementById('contact-modal');
-            const closeContactModalBtn = document.getElementById('close-contact-modal-btn');
-            const contactFormIframe = document.getElementById('contact-form-iframe');
-            // A new hypothetical URL for a simple contact form. Replace with your own free form link.
-            const contactFormUrl = 'https://form.jotform.com/241234567890156'; // Placeholder URL
+            // // --- Contact/Chat Modal Logic (Updated) ---
+            // const openChatBtn = document.getElementById('open-chat-btn');
+            // const contactModal = document.getElementById('contact-modal');
+            // const closeContactModalBtn = document.getElementById('close-contact-modal-btn');
+            // const contactFormIframe = document.getElementById('contact-form-iframe');
+            // // A new hypothetical URL for a simple contact form. Replace with your own free form link.
+            // const contactFormUrl = 'https://cdn.jotfor.ms/agent/embedjs/019a290ab17b772b88f3900bf6cafbd8ad11/embed.js'; // Placeholder URL
 
-            if (openChatBtn && contactModal && closeContactModalBtn && contactFormIframe) {
-                openChatBtn.addEventListener('click', () => {
-                    contactFormIframe.src = contactFormUrl;
-                    contactModal.classList.remove('hidden');
-                    openChatBtn.classList.add('hidden'); // Hide the chat button
-                });
+            // if (openChatBtn && contactModal && closeContactModalBtn && contactFormIframe) {
+            //     openChatBtn.addEventListener('click', () => {
+            //         contactFormIframe.src = contactFormUrl;
+            //         contactModal.classList.remove('hidden');
+            //         openChatBtn.classList.add('hidden'); // Hide the chat button
+            //     });
 
-                const closeContactModal = () => {
-                    contactModal.classList.add('hidden');
-                    contactFormIframe.src = ''; // Clear src to stop form processes
-                    openChatBtn.classList.remove('hidden'); // Show the chat button
-                };
+            //     const closeContactModal = () => {
+            //         contactModal.classList.add('hidden');
+            //         contactFormIframe.src = ''; // Clear src to stop form processes
+            //         openChatBtn.classList.remove('hidden'); // Show the chat button
+            //     };
 
-                closeContactModalBtn.addEventListener('click', closeContactModal);
+            //     closeContactModalBtn.addEventListener('click', closeContactModal);
 
-                // Removed click-outside-to-close logic as it's a pop-up, not an overlay
-            }
+            //     // Removed click-outside-to-close logic as it's a pop-up, not an overlay
+            // }
 
             // --- Hero Carousel Logic (Restored) ---
             const heroContent = [
