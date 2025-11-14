@@ -106,7 +106,22 @@
                     <a href="#home" class="text-gray-300 hover:text-white transition-colors">Home</a>
                     <a href="#services" class="text-gray-300 hover:text-white transition-colors">Services</a>
                     <a href="#destinations" class="text-gray-300 hover:text-white transition-colors">Destinations</a>
-                    <a href="https://form.jotform.com/253018469188163" class="text-gray-300 hover:text-white transition-colors">Forums</a>
+                     <!-- MODIFICATION: Forums Dropdown -->
+                    <div class="relative group">
+                        <button class="flex items-center space-x-1 text-gray-300 hover:text-white transition-colors">
+                            <span>Forums</span>
+                            <!-- Dropdown Arrow -->
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 w-48 bg-gray-900/90 backdrop-blur-sm shadow-xl rounded-md pt-2 mt-2 border border-gray-700/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                            <a href="https://form.jotform.com/253018469188163" class="block w-full text-left px-4 py-3 text-sm text-gray-200 hover:bg-orange-600 hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">Form 1</a>
+                            <a href="#" class="block w-full text-left px-4 py-3 text-sm text-gray-200 hover:bg-orange-600 hover:text-white transition-colors">Form 2</a>
+                            <a href="#" class="block w-full text-left px-4 py-3 text-sm text-gray-200 hover:bg-orange-600 hover:text-white transition-colors">Form 3</a>
+                        </div>
+                    </div>
+                    <!-- END MODIFICATION -->
+                    <a href="" class="text-gray-300 hover:text-white transition-colors">Forums</a>
                     <a href="#about" class="text-gray-300 hover:text-white transition-colors">About Us</a>
                     <a href="#support" class="text-gray-300 hover:text-white transition-colors">Support</a>
                 </div>
